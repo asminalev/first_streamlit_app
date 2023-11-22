@@ -24,14 +24,12 @@ streamlit.dataframe(fruits_to_show)
 
 # New section to display fruityvice api response
 #import requests
-
-streamlit.header('Fruityvice Fruit Advice!')
-
 def get_fruityvice_data(this_fruit_choice):
   fruityvice_response = requests.get("http://fruityvice.com/api/fruit" + this_fruit_choice)
   fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
   return fruityvice_normalized
-  
+
+streamlit.header('Fruityvice Fruit Advice!')
 try:
   fruit_choice = streamlit.text_input('Enter your prefered fruit')
   if not fruit_choice:
@@ -39,8 +37,6 @@ try:
   else:
     back_from_function = get_fruityvice_data(fruit_choice)    
     streamlit.dataframe(back_from_function)
-except URLError as e:
-  streamlit.error()
 
 streamlit.stop()
 #import snowflake.connector
