@@ -2,6 +2,7 @@ import streamlit
 import pandas
 import requests
 import snowflake.connector
+from urllib.error import URLError
 
 streamlit.header('Breakfast Menu')
 streamlit.text('🥣 Omega 3 & Blueberry Oatmeal')
@@ -25,14 +26,19 @@ streamlit.dataframe(fruits_to_show)
 #import requests
 
 streamlit.header('Fruityvice Fruit Advice!')
-fruit_choice = streamlit.text_input('Enter your prefered fruit', 'Kiwi')
-streamlit.write('You entered ',fruit_choice)
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-
-# Normalize the json data we just got with API requests 
-fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-# display the normalized data as dataframe
-streamlit.dataframe(fruityvice_normalized)
+try:
+  fruit_choice = streamlit.text_input('Enter your prefered fruit')
+  if not fruit_choice:
+    streamlit.error('Please select a fruit to get information')
+  else:
+    streamlit.write('You entered ',fruit_choice)
+    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+    # Normalize the json data we just got with API requests 
+    fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+    # display the normalized data as dataframe
+    streamlit.dataframe(fruityvice_normalized)
+except URLError as e:
+  streamlit.error()
 
 streamlit.stop()
 #import snowflake.connector
