@@ -64,13 +64,13 @@ def insert_raw_snowflake(new_fruit):
       return 'Thanks for adding ' + new_fruit
     
 
-# Establish Snowflake connection
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 add_my_fruit = streamlit.text_input('What fruit would you like to add?')
 
 # Button to add the fruit to Snowflake
 if streamlit.button('Add a Fruit to the List in snowflake'):
-    back_from_function = insert_raw_snowflake(add_my_fruit)
-    streamlit.text(back_from_function)
-my_cnx.stop()
+  # Establish Snowflake connection
+  my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+  back_from_function = insert_raw_snowflake(add_my_fruit)
+  streamlit.text(back_from_function)
+  my_cnx.stop()
 
