@@ -69,8 +69,8 @@ def insert_raw_snowflake(conn, new_fruit):
       conn.commit()  # Commit the transaction
       
       return 'Thanks for adding ' + new_fruit
-except Exception as e:
-  return f"Error: {e}"
+  except URLError as e:
+    streamlit.error()
 
 # Establish Snowflake connection
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
