@@ -62,7 +62,7 @@ def insert_raw_snowflake(conn, new_fruit):
   try:
     with my_cnx.cursor() as my_cur:
       # Parameterized SQL query to insert the new fruit into the 'fruit_load_list' table
-      insert_query = "INSERT INTO fruit_load_list VALUES (?)"
+      insert_query = "INSERT INTO fruit_load_list VALUES (:1)"
       
       # Execute the SQL query with the new_fruit value as a parameter
       my_cur.execute(insert_query, (new_fruit,))
