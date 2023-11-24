@@ -43,7 +43,7 @@ except URLError as e:
 #streamlit.stop()
 #import snowflake.connector
 
-streamlit.header("The fruit load list contains:")
+streamlit.header("View our fruit List - Get Your Favorite")
 
 def get_fruit_load_list():
   with my_cnx.cursor() as my_cur:
@@ -51,26 +51,18 @@ def get_fruit_load_list():
     return my_cur.fetchall()
     
 #Add a button to load the fruit
-if streamlit.button('Get Fruit Load List'):
+if streamlit.button('Get Fruit List'):
   my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
   my_data_rows = get_fruit_load_list()
   streamlit.dataframe(my_data_rows)
   
 #streamlit.stop()
 # Function to insert fruit into Snowflake
-def insert_raw_snowflake(conn, new_fruit):
-  try:
-    with my_cnx.cursor() as my_cur:
-      # Parameterized SQL query to insert the new fruit into the 'fruit_load_list' table
-      insert_query = "INSERT INTO fruit_load_list VALUES ('"+ new_fruit +"')"
-      
-      # Execute the SQL query with the new_fruit value as a parameter
-      my_cur.execute(insert_query, (new_fruit,))
-      conn.commit()  # Commit the transaction
-      
+def insert_raw_snowflake(new_fruit):
+  with my_cnx.cursor() as my_cur:
+      my_cur.execute("INSERT INTO fruit_load_list VALUES ('"+ new_fruit +"')")      
       return 'Thanks for adding ' + new_fruit
-  except URLError as e:
-    streamlit.error()
+    
 
 # Establish Snowflake connection
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
@@ -78,10 +70,7 @@ add_my_fruit = streamlit.text_input('What fruit would you like to add?')
 
 # Button to add the fruit to Snowflake
 if streamlit.button('Add a Fruit to the List in snowflake'):
-    # Validate user input
-    if add_my_fruit.strip():  # Check if the input is not empty
-      back_from_function = insert_raw_snowflake(my_cnx, add_my_fruit)
-      streamlit.text(back_from_function)
-    else:
-      st.text("Please provide a valid fruit name")
+    back_from_function = insert_raw_snowflake(add_my_fruit)
+    streamlit.text(back_from_function)
+my_cnx.stop()
 
