@@ -57,21 +57,31 @@ if streamlit.button('Get Fruit Load List'):
   streamlit.dataframe(my_data_rows)
   
 #streamlit.stop()
-def insert_raw_snowflake(new_fruit):
-  with my_cnx.cursor() as my_cur:
-    # Parameterized SQL query to insert the new fruit into the 'fruit_load_list' table
-    insert_query = "INSERT INTO fruit_load_list VALUES (?)"
-    
-    # Execute the SQL query with the new_fruit value as a parameter
-    my_cur.execute(insert_query, (new_fruit,))
-    
-    return 'Thanks for adding ' + new_fruit
+# Function to insert fruit into Snowflake
+def insert_raw_snowflake(conn, new_fruit):
+  try:
+    with my_cnx.cursor() as my_cur:
+      # Parameterized SQL query to insert the new fruit into the 'fruit_load_list' table
+      insert_query = "INSERT INTO fruit_load_list VALUES (?)"
+      
+      # Execute the SQL query with the new_fruit value as a parameter
+      my_cur.execute(insert_query, (new_fruit,))
+      conn.commit()  # Commit the transaction
+      
+      return 'Thanks for adding ' + new_fruit
+except Exception as e:
+  return f"Error: {e}"
 
+# Establish Snowflake connection
+my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 add_my_fruit = streamlit.text_input('What fruit would you like to add?')
 
-#Add a button to add the fruit into snowflake
+# Button to add the fruit to Snowflake
 if streamlit.button('Add a Fruit to the List in snowflake'):
-  my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-  back_from_function = insert_raw_snowflake(add_my_fruit)
-  streamlit.text(back_from_function)
+    # Validate user input
+    if add_my_fruit.strip():  # Check if the input is not empty
+      back_from_function = insert_raw_snowflake(my_cnx, add_my_fruit)
+      streamlit.text(back_from_function)
+    else:
+      st.text("Please provide a valid fruit name")
 
